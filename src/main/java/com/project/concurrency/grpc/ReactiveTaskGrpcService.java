@@ -7,7 +7,6 @@ import com.project.concurrency.service.ReactiveTaskService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @GrpcService
@@ -49,8 +48,7 @@ public class ReactiveTaskGrpcService extends ReactiveTaskServiceGrpc.ReactiveTas
     @Override
     public void get(TaskRequest request, StreamObserver<TaskDto> responseObserver) {
         Mono<Task> mono = service.get(request.getId());
-        mono.switchIfEmpty(Mono.error(
-                        Status.NOT_FOUND.withDescription("Task not found").asRuntimeException()))
+        mono.switchIfEmpty(Mono.error(Status.NOT_FOUND.withDescription("Task not found").asRuntimeException()))
                 .subscribe(
                         task -> {
                             responseObserver.onNext(TaskMapper.toDto(task));
@@ -61,18 +59,17 @@ public class ReactiveTaskGrpcService extends ReactiveTaskServiceGrpc.ReactiveTas
     }
 
     @Override
-    public void list(Empty request, StreamObserver<TaskList> responseObserver) {
-        Flux<Task> flux = service.getAll();
-        TaskList.Builder builder = TaskList.newBuilder();
-        flux.collectList()
+    public void delete(TaskRequest request, StreamObserver<Empty> responseObserver) {
+        service.delete(request.getId())
                 .subscribe(
-                        list -> {
-                            list.forEach(t -> builder.addTasks(TaskMapper.toDto(t)));
-                            responseObserver.onNext(builder.build());
-                            responseObserver.onCompleted();
-                        },
+                        unused -> {},
                         ex -> responseObserver.onError(
-                                Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException())
+                                Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException()
+                        ),
+                        () -> {
+                            responseObserver.onNext(Empty.getDefaultInstance());
+                            responseObserver.onCompleted();
+                        }
                 );
     }
 }

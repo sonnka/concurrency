@@ -1,4 +1,3 @@
-// src/main/resources/proto/task.proto
 syntax = "proto3";
 
 package tasks;
@@ -24,27 +23,23 @@ message TaskRequest {
   int64 id = 1;
 }
 
-message TaskList {
-  repeated TaskDto tasks = 1;
-}
-
 service WorkerTaskService {
   rpc Create (CreateTaskRequest) returns (TaskDto);
   rpc Update (TaskDto) returns (TaskDto);
   rpc Get (TaskRequest) returns (TaskDto);
-  rpc List (google.protobuf.Empty) returns (TaskList);
+  rpc Delete (TaskRequest) returns (google.protobuf.Empty);
 }
 
 service VirtualTaskService {
   rpc Create (CreateTaskRequest) returns (TaskDto);
   rpc Update (TaskDto) returns (TaskDto);
   rpc Get (TaskRequest) returns (TaskDto);
-  rpc List (google.protobuf.Empty) returns (TaskList);
+  rpc Delete (TaskRequest) returns (google.protobuf.Empty);
 }
 
 service ReactiveTaskService {
   rpc Create (CreateTaskRequest) returns (TaskDto);
   rpc Update (TaskDto) returns (TaskDto);
   rpc Get (TaskRequest) returns (TaskDto);
-  rpc List (google.protobuf.Empty) returns (TaskList);
+  rpc Delete (TaskRequest) returns (google.protobuf.Empty);
 }

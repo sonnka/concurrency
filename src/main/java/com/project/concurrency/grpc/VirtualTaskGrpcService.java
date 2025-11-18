@@ -8,7 +8,6 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
-import java.util.List;
 import java.util.Optional;
 
 @GrpcService
@@ -35,8 +34,7 @@ public class VirtualTaskGrpcService extends VirtualTaskServiceGrpc.VirtualTaskSe
             responseObserver.onNext(TaskMapper.toDto(opt.get()));
             responseObserver.onCompleted();
         } else {
-            responseObserver.onError(
-                    Status.NOT_FOUND.withDescription("Task not found").asRuntimeException());
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Task not found").asRuntimeException());
         }
     }
 
@@ -47,17 +45,14 @@ public class VirtualTaskGrpcService extends VirtualTaskServiceGrpc.VirtualTaskSe
             responseObserver.onNext(TaskMapper.toDto(opt.get()));
             responseObserver.onCompleted();
         } else {
-            responseObserver.onError(
-                    Status.NOT_FOUND.withDescription("Task not found").asRuntimeException());
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Task not found").asRuntimeException());
         }
     }
 
     @Override
-    public void list(Empty request, StreamObserver<TaskList> responseObserver) {
-        List<Task> tasks = service.getAll();
-        TaskList.Builder builder = TaskList.newBuilder();
-        tasks.forEach(t -> builder.addTasks(TaskMapper.toDto(t)));
-        responseObserver.onNext(builder.build());
+    public void delete(TaskRequest request, StreamObserver<Empty> responseObserver) {
+        service.delete(request.getId());
+        responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
 }

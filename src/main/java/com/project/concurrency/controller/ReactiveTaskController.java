@@ -5,7 +5,6 @@ import com.project.concurrency.service.ReactiveTaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -36,11 +35,6 @@ public class ReactiveTaskController {
         return service.get(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping
-    public Flux<Task> getAll() {
-        return service.getAll();
     }
 
     @DeleteMapping("/{id}")

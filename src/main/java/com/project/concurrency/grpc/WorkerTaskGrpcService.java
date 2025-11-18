@@ -26,11 +26,7 @@ public class WorkerTaskGrpcService extends WorkerTaskServiceGrpc.WorkerTaskServi
                     responseObserver.onNext(dto);
                     responseObserver.onCompleted();
                 })
-//                .exceptionally(ex -> {
-//                    responseObserver.onError(
-//                            Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException());
-//                    return null;
-//                })
+                .exceptionally(ex -> handleError(ex, responseObserver));
         ;
     }
 
@@ -46,11 +42,7 @@ public class WorkerTaskGrpcService extends WorkerTaskServiceGrpc.WorkerTaskServi
                                 Status.NOT_FOUND.withDescription("Task not found").asRuntimeException());
                     }
                 })
-                .exceptionally(ex -> {
-                    responseObserver.onError(
-                            Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException());
-                    return null;
-                });
+                .exceptionally(ex -> handleError(ex, responseObserver));
     }
 
     @Override
@@ -65,28 +57,21 @@ public class WorkerTaskGrpcService extends WorkerTaskServiceGrpc.WorkerTaskServi
                                 Status.NOT_FOUND.withDescription("Task not found").asRuntimeException());
                     }
                 })
-                .exceptionally(ex -> {
-                    responseObserver.onError(
-                            Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException());
-                    return null;
-                });
+                .exceptionally(ex -> handleError(ex, responseObserver));
     }
 
     @Override
-    public void list(Empty request, StreamObserver<TaskList> responseObserver) {
-        service.getAll()
-                .thenAccept(list -> {
-                    TaskList.Builder builder = TaskList.newBuilder();
-                    for (Task t : list) {
-                        builder.addTasks(TaskMapper.toDto(t));
-                    }
-                    responseObserver.onNext(builder.build());
+    public void delete(TaskRequest request, StreamObserver<Empty> responseObserver) {
+        service.delete(request.getId())
+                .thenRun(() -> {
+                    responseObserver.onNext(Empty.getDefaultInstance());
                     responseObserver.onCompleted();
                 })
-                .exceptionally(ex -> {
-                    responseObserver.onError(
-                            Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException());
-                    return null;
-                });
+                .exceptionally(ex -> handleError(ex, responseObserver));
+    }
+
+    private <T> Void handleError(Throwable ex, StreamObserver<T> responseObserver) {
+        responseObserver.onError(Status.INTERNAL.withDescription(ex.getMessage()).asRuntimeException());
+        return null;
     }
 }

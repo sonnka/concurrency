@@ -3,8 +3,6 @@ package com.project.concurrency.repository;
 import com.project.concurrency.model.Task;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -43,16 +41,8 @@ public class TaskRepository {
         return Optional.ofNullable(storage.get(id));
     }
 
-    public List<Task> findAll() {
-        return new ArrayList<>(storage.values());
-    }
-
     public void deleteById(Long id) {
         storage.remove(id);
-    }
-
-    public void deleteAll() {
-        storage.clear();
     }
 }
 

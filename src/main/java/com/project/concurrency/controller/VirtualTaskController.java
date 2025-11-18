@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/virtual/tasks")
 public class VirtualTaskController {
@@ -36,11 +34,6 @@ public class VirtualTaskController {
         return service.get(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping
-    public List<Task> getAll() {
-        return service.getAll();
     }
 
     @DeleteMapping("/{id}")

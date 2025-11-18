@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -37,11 +36,6 @@ public class WorkerTaskController {
         return service.get(id)
                 .thenApply(opt -> opt.map(ResponseEntity::ok)
                         .orElseGet(() -> ResponseEntity.notFound().build()));
-    }
-
-    @GetMapping
-    public CompletableFuture<List<Task>> getAll() {
-        return service.getAll();
     }
 
     @DeleteMapping("/{id}")
