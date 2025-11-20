@@ -1,0 +1,64 @@
+package com.project.mvc_concurrency.grpc;
+
+import com.google.protobuf.Empty;
+import com.project.concurrency.grpc.CreateTaskRequest;
+import com.project.concurrency.grpc.TaskDto;
+import com.project.concurrency.grpc.TaskRequest;
+import com.project.concurrency.grpc.VirtualTaskServiceGrpc;
+import com.project.mvc_concurrency.model.Task;
+import com.project.mvc_concurrency.model.TaskMapper;
+import com.project.mvc_concurrency.service.VirtualTaskService;
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
+
+import java.util.Optional;
+
+@GrpcService
+public class VirtualTaskGrpcService extends VirtualTaskServiceGrpc.VirtualTaskServiceImplBase {
+
+    private final VirtualTaskService service;
+
+    public VirtualTaskGrpcService(VirtualTaskService service) {
+        this.service = service;
+    }
+
+    @Override
+    public void create(CreateTaskRequest request, StreamObserver<TaskDto> responseObserver) {
+        Task saved = service.create(new Task(null, request.getTitle(), request.getDescription()));
+        responseObserver.onNext(TaskMapper.toDto(saved));
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void update(TaskDto request, StreamObserver<TaskDto> responseObserver) {
+        Optional<Task> opt = service.update(request.getId(), new Task(request.getId(), request.getTitle(),
+                request.getDescription()));
+        if (opt.isPresent()) {
+            responseObserver.onNext(TaskMapper.toDto(opt.get()));
+            responseObserver.onCompleted();
+        } else {
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Task not found")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void get(TaskRequest request, StreamObserver<TaskDto> responseObserver) {
+        Optional<Task> opt = service.get(request.getId());
+        if (opt.isPresent()) {
+            responseObserver.onNext(TaskMapper.toDto(opt.get()));
+            responseObserver.onCompleted();
+        } else {
+            responseObserver.onError(Status.NOT_FOUND.withDescription("Task not found")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void delete(TaskRequest request, StreamObserver<Empty> responseObserver) {
+        service.delete(request.getId());
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
+    }
+}

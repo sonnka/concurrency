@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  jpa-db:
+    image: postgres:latest
+    container_name: postgres-jpa-db
+    environment:
+      POSTGRES_DB: ${JPA_DB}
+      POSTGRES_USER: ${JPA_DB_USER}
+      POSTGRES_PASSWORD: ${JPA_DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    restart: always
+
+  r2dbc-db:
+    image: postgres:latest
+    container_name: postgres-r2dbc-db
+    environment:
+      POSTGRES_DB: ${R2DBC_DB}
+      POSTGRES_USER: ${R2DBC_DB_USER}
+      POSTGRES_PASSWORD: ${R2DBC_DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    restart: always
