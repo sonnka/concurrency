@@ -40,7 +40,7 @@ public class ReactiveTaskService {
                 });
     }
 
-    @Transactional
+    @Transactional("connectionFactoryTransactionManager")
     public Mono<Void> delete(Long id) {
         return repository.deleteById(id);
     }

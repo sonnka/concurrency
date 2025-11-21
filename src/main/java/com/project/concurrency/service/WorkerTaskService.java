@@ -2,9 +2,9 @@ package com.project.concurrency.service;
 
 import com.project.concurrency.model.Task;
 import com.project.concurrency.repository.jpa.TaskRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,7 +44,7 @@ public class WorkerTaskService {
         return CompletableFuture.supplyAsync(() -> repository.findById(id), executor);
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     public CompletableFuture<Void> delete(Long id) {
         return CompletableFuture.runAsync(() -> repository.deleteById(id), executor);
     }

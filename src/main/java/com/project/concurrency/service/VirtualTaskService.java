@@ -2,8 +2,8 @@ package com.project.concurrency.service;
 
 import com.project.concurrency.model.Task;
 import com.project.concurrency.repository.jpa.TaskRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ public class VirtualTaskService {
         return repository.findById(id);
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     public void delete(Long id) {
         repository.deleteById(id);
     }
